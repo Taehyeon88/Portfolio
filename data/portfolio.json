@@ -1,57 +1,57 @@
 {
   "profile": {
-    "name": "김민준",
+    "name": "문태현",
     "job": "게임 클라이언트 프로그래머",
     "introduction": "Unity와 C#을 활용해 게임 시스템과 UI를 구현합니다. 플레이 가능한 결과와 작업 문서로 개발 과정을 증명합니다.",
-    "email": "student@example.com",
-    "profileImage": "images/profile.png",
-    "resume": "resume.html",
-    "github": "https://github.com/"
+    "email": "Taehyeon5376@gmail.com",
+    "github": "https://github.com/Taehyeon88",
+    "profileImage": "images/2024137054_WenTaiXian.jpg",
+    "resume": "resume.html"
   },
-  "skills": ["C#", "Unity", "GitHub", "JSON"],
+  "skills": [
+    "C#",
+    "Unity",
+    "GitHub",
+    "JSON"
+  ],
   "projects": [
     {
-      "id": "star-puzzle",
-      "title": "Star Puzzle",
-      "thumbnail": "images/star-puzzle.svg",
-      "description": "별 배치 규칙을 활용한 논리 퍼즐 게임입니다.",
-      "genre": "퍼즐",
-      "platform": "WebGL",
-      "period": "2026.03 ~ 2026.06",
-      "team": { "size": 4, "myRole": "클라이언트 프로그래밍" },
+      "id": "superup",
+      "title": "SuperUp",
+      "thumbnail": "images/SuperUp_Image.png",
+      "description": "점프/파쿠르 + 함정을 피해서 최상층의 목표 지점까지 올라가세요\n목표를 향하면서 나레이션을 통해 스토리를 듣고 분기점에서 선택을 하세요 당신의 선택에 따라서 엔딩이 결정됩니\n\n<구성>\n함정 6종류\n플레이어 행동 (이동, 점프, 낙하, 착지, 파쿠르) 5종류\n스테이지(레벨) 5개 구역",
+      "genre": "온리업류",
+      "platform": "PC",
+      "period": "2025.03 ~ 2025.06",
+      "team": {
+        "size": 6,
+        "myRole": "클라이언트 프로그래밍"
+      },
       "contributions": [
-        "퍼즐 정답 판정 알고리즘 구현",
-        "힌트 및 생명 시스템 구현",
-        "JSON 기반 스테이지 데이터 구조 설계"
+        "함정 2개, 아트 리소스를 제외한 모든 콘텐츠, 시스템",
+        "플레이어 시스템 구현",
+        "내용 : 상태 변화에 따른 연산 및 애니메이션 변경",
+        "사용 기술 : FSM 상태 머신",
+        "함정 4개 구현",
+        "내용 : 포탑형 함정 3종, 밀쳐지는 탄을 쏘는 대포",
+        "사용 기술 : 객체지향(상속)",
+        "시나리오 시스템 및 JSON 기반 시나리오 데이터 구조 설계",
+        "내용 : Excel을 통해 분기점, 시나리오 흐름 데이터 관리, 인 게임 시나리오 트리거로 시나리오 실행",
+        "사용 기술 : JSON"
       ],
-      "problemSolving": [{
-        "problem": "새로운 스테이지를 추가할 때마다 코드를 수정해야 했습니다.",
-        "solution": "스테이지 규칙과 정답 데이터를 JSON 파일로 분리했습니다.",
-        "result": "코드 수정 없이 신규 스테이지를 추가할 수 있게 되었습니다."
-      }],
+      "problemSolving": [
+        {
+          "problem": "플레이어 파쿠르(벽타기) 애니메이션 시, 손 위치/파쿠르 위치가 알맞지 안됨",
+          "solution": "MovementController.cs 내 \nOnAnimatorIK() - 이벤트 메서드 사용, 벽타기 애니메이션 손 위치 조정\nFBX 수치 조정",
+          "result": "플레이어 파쿠르(벽타기) 애니메이션 시, 손 위치/파쿠르 위치가 알맞지 조정"
+        }
+      ],
       "links": {
-        "play": "https://example.com",
+        "play": "https://store.onstove.com/ko/games/101426",
         "video": "",
-        "github": "https://github.com/",
+        "github": "https://github.com/Taehyeon88/Team7_SuperUp",
         "document": "documents/project-document.html"
       }
-    },
-    {
-      "id": "dual-duel",
-      "title": "Dual Duel",
-      "thumbnail": "images/dual-duel.svg",
-      "description": "카드 조합과 선택을 중심으로 구성한 턴제 대전 게임입니다.",
-      "genre": "카드 전략",
-      "platform": "Windows",
-      "period": "2025.09 ~ 2025.12",
-      "team": { "size": 5, "myRole": "UI 및 데이터 저장" },
-      "contributions": ["덱 편집 UI 구현", "카드 데이터 저장 기능 구현", "팀 Git 브랜치 관리"],
-      "problemSolving": [{
-        "problem": "카드 목록이 변경될 때 UI가 중복 생성되었습니다.",
-        "solution": "데이터 갱신과 UI 생성을 분리하고 기존 슬롯을 재사용했습니다.",
-        "result": "중복 생성을 제거하고 덱 편집 화면의 성능을 개선했습니다."
-      }],
-      "links": { "play": "", "video": "", "github": "https://github.com/", "document": "" }
     }
   ]
 }
