@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rovoid 프로젝트 문서</title>
+<link rel="stylesheet" href="../css/document.css">
+</head>
+<body>
+<a class="back" href="../project.html?id=rovoid">← 프로젝트 상세로</a>
+<h1>Rovoid</h1>
+<p class="sub">2.5D 액션 로그라이크 · 7인 팀 · 시스템 구조 설계 · 2025.07 ~ 2025.12</p>
+
+<div class="shots">
+  <img src="../images/Rovoid_Image.png" alt="Rovoid 화면 1">
+  <img src="../images/Rovoid_Image2.png" alt="Rovoid 화면 2">
+</div>
+
+<table>
+  <tr><th>장르</th><td>액션 로그라이크, 2.5D</td></tr>
+  <tr><th>주요역할 및 담당</th><td>1. 게임 코어 아키텍처 및 플레이어, 직업/스킬/아이템 시스템<br>2. UI/사운드 시스템</td></tr>
+  <tr><th>개발 인원</th><td>총원 7명 (클라이언트 프로그래밍 2명, 기획 1명, PM/QA 1명, 아트 3명)</td></tr>
+  <tr><th>개발 환경</th><td>Unity 2022.03.59f1, C#</td></tr>
+  <tr><th>링크</th><td>
+    <a href="https://github.com/coil38/2025-2_Space" target="_blank" rel="noopener noreferrer">GitHub</a> ·
+    <a href="https://store.onstove.com/ko/games/103329" target="_blank" rel="noopener noreferrer">STOVE</a>
+  </td></tr>
+</table>
+
+<h2>한눈에 보기</h2>
+<p class="lead">외부에서 가져온 구조 없이 시스템 구조를 직접 설계했고, 무기를 의존성 주입으로 받게 해 칩셋(직업)만 바꿔도 공격 로직 수정 없이 무기와 스킬이 교체되며, 유물 효과 48종을 이벤트 구독 방식으로 구현했습니다.</p>
+<p>저장소에 커밋 172개를 작성했고, 시스템 구조 설계부터 플레이어·유물·인벤토리·UI·사운드까지 클라이언트 핵심을 맡았습니다.</p>
+
+<table>
+  <tr><th>내가 구현한 것</th></tr>
+  <tr><td>
+    시스템 구조 설계: Manager 구조, 이벤트 기반 통신, 데이터 로더<br>
+    무기·스킬 의존성 주입 구조 (칩셋 장착으로 교체)<br>
+    이벤트 기반 유물 시스템: 효과 48종, 유물 64개, 교환기·정화기<br>
+    플레이어 이동·대시·공격·애니메이션, 치명타·회피<br>
+    칩셋 선택·인벤토리·설정·가이드 UI, 경험치·보상 상자<br>
+    사운드 데이터베이스와 사운드 시스템
+  </td></tr>
+</table>
+
+<h2>핵심 1. 무기 의존성 주입</h2>
+<p><b>문제</b><br>무기와 스킬은 칩셋(전사, 궁수)마다 다릅니다. 공격을 처리하는 <code>PlayerAttack</code>이 구체적인 무기를 알고 있으면, 칩셋이 늘어날 때마다 공격 코드를 고쳐야 합니다.</p>
+<p><b>설계</b></p>
+<ul>
+  <li><code>PlayerAttack</code>은 추상 클래스 <code>WeaponType</code>(<code>IUse</code>, <code>ICheckUse</code> 구현)과 <code>SkillType[]</code>에만 의존합니다.</li>
+  <li><code>InventoryManager</code>가 칩셋을 장착할 때 그 칩셋의 무기와 스킬을 <code>PlayerAttack</code>에 주입하고, 해제하면 <code>null</code>로 되돌립니다. DI 컨테이너 없이 프로퍼티(세터)로 주입하는 방식입니다.</li>
+  <li><code>WeaponSword</code>, <code>WeaponBow</code> 같은 구현체는 각자 공격 동작만 구현하고, 칩셋(<code>WarriorChipset</code>, <code>ArcherChipset</code>)이 무기와 스킬을 묶어 들고 있습니다.</li>
+</ul>
+<p><b>효과</b><br>새 무기나 칩셋을 추가해도 <code>PlayerAttack</code>은 수정하지 않습니다. 장착 중에 무기를 바꾸는 것도 주입만 다시 하면 됩니다.</p>
+<pre><code>// PlayerAttack — 구체 무기를 모르고 외부에서 주입받는다
+private WeaponType weaponType;   // 의존성 주입
+public WeaponType WeaponType { set { weaponType = value; } }
+
+// InventoryManager — 칩셋 장착 시 주입, 해제 시 null
+playerAttack.WeaponType = _chipSet.weapon;
+playerAttack.SkillTypes = _chipSet.skills;</code></pre>
+
+<h2>핵심 2. 이벤트 기반 유물 시스템</h2>
+<p><b>설계</b><br>유물 데이터(JSON → ScriptableObject)가 효과 ID와 수치를 들고 있고, <code>RelicEffectManager</code>가 ID로 효과 클래스를 찾아 실행합니다. 각 효과(<code>RelicEffectType.Excute</code>)는 장착하면 필요한 이벤트를 구독하고 해제하면 구독을 해지합니다. 효과를 여러 개 가진 유물(다중 효과)과 조건이 붙는 효과(조건형)도 같은 구조로 처리합니다.</p>
+<p><b>규모</b><br>유물 효과 클래스 48종, 이를 조합한 유물 64개(일반 43, 정화 11, 근원 10)입니다. 유물 교환기·정화기, 보상 상자, 유물 생성 치트도 이 구조 위에 연결했습니다.</p>
+<p><b>효과</b><br>새 유물은 효과 클래스 하나와 ID 등록, 데이터 한 줄로 추가됩니다. 전투·UI 쪽 기존 코드는 수정하지 않습니다.</p>
+<p><b>어려웠던 점</b><br>장착과 해제가 반복되는 구조라 이벤트 구독이 해지되지 않는 오류가 있었습니다(PlayerEvent 체인). 구독과 해지를 <code>Excute(isEquip, info)</code> 한 곳에서 처리하는 구조로 정리해 바로잡았고, 한 유물에 효과가 여러 개 붙는 경우도 같은 방식으로 다루도록 유물 시스템을 리팩토링했습니다.</p>
+<p><b>배운 점</b><br>48개 효과 클래스가 <code>RelicEffectManager.cs</code> 한 파일(약 900줄)에 모여 있어서, 효과를 찾고 수정하기 어려웠습니다. 파일이나 폴더로 나눴다면 유지보수가 더 쉬웠을 것입니다.</p>
+<pre><code>public class RelicEffectType   // 모든 유물 효과의 기반
+{
+    protected RelicInfo relicInfo { get; private set; }
+    public virtual void Excute(bool isEquip, RelicInfo info) { relicInfo = info; }
+}
+
+// ID → 효과 클래스 등록 (일부)
+{ 100, typeof(AttackRateBoost) }, { 101, typeof(MoreAttackChance) }, { 102, typeof(CritChanceBoost) }, ...
+
+// 예: 모든 공격이 n% 확률로 한 번 더 적용되는 유물
+private class MoreAttackChance : RelicEffectType
+{
+    public override void Excute(bool isEquip, RelicInfo info)
+    {
+        base.Excute(isEquip, info);
+        if (isEquip) AttackEventManager.OnAttackStarted += OnMoreAttackChance;
+        // 해제 시 구독 해지 (일부 생략)
+    }
+}</code></pre>
+
+<h2>시스템 구조 설계</h2>
+<ul>
+  <li><b>Manager 단일 구조:</b> SoundManager, DataManager, GameSceneManager, RewardManager, PlayerUIManager 등 게임 전반의 시스템을 Singleton 기반 Manager로 설계해 전역 상태 관리와 접근 구조를 통합했습니다. 씬 전환에도 유지되는 Persistent Manager 구조로 데이터와 시스템 안정성을 확보했습니다.</li>
+  <li><b>이벤트 기반 통신:</b> <code>PlayerEvent</code>, <code>RelicEvent</code>, <code>AttackEventManager</code> 같은 이벤트로 UI, 사운드, 게임 로직 사이의 결합도를 낮췄습니다. Manager 사이는 인터페이스 기반 접근으로 의존성을 최소화했습니다.</li>
+  <li><b>전략 패턴:</b> 무기, 스킬(검사·궁수 스킬), 유물 효과를 상속 구조로 모듈화해 새 스킬이나 유물을 기존 코드 수정 없이 추가할 수 있게 했습니다.</li>
+  <li><b>데이터 파이프라인:</b> Excel → JSON → ScriptableObject 순서로 변환하는 도구를 만들어 기획자가 밸런스 데이터를 직접 관리하고, 유니티 재빌드 없이 데이터를 갱신할 수 있게 했습니다. 칩셋, 칩셋 구성, 유물, 유물 효과, 사운드, 가이드가 모두 같은 로더 구조(<code>*DataLoader</code> / <code>*DatabaseSO</code> / <code>*SO</code>)를 씁니다.</li>
+</ul>
+
+<h2>그 밖의 시스템</h2>
+<ul>
+  <li><b>플레이어:</b> 이동, 대시, 공격, 피격, 사망 애니메이션과 치명타·회피 처리</li>
+  <li><b>UI:</b> 칩셋 선택, 인벤토리, 설정(입력 변경·사운드 조절), 일시정지, 가이드</li>
+  <li><b>사운드:</b> 사운드 데이터베이스(JSON → SO)와 BGM·효과음·UI 사운드 시스템</li>
+  <li><b>성장·보상:</b> 경험치와 레벨업 연출, 레벨 보정, 보상 상자, 드랍 확률</li>
+</ul>
+</body>
+</html>

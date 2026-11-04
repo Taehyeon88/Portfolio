@@ -12,8 +12,11 @@
     "Unity",
     "C#",
     "GitHub",
-    "Node.js",
-    "JavaScript"
+    "이벤트 기반 커맨드 패턴",
+    "싱글톤 패턴",
+    "전략 패턴",
+    "의존성 주입",
+    "FSM(유한 상태 머신)"
   ],
   "projects": [
     {
@@ -29,21 +32,128 @@
         "myRole": "클라이언트 프로그래밍"
       },
       "contributions": [
-        "1인 클라이언트 프로그래머",
-        "카드, 몬스터, 플레이어, 그리드/턴 시스템, 등"
+        "모바일협회장상 수상 (3학년 1학기)",
+        "1인 클라이언트 프로그래머 (클라이언트 1명, 기획 1명, 아트 1명)",
+        "카드, 몬스터, 플레이어, 그리드/턴을 포함한 모든 시스템",
+        "7×7 그리드 시스템 (위치·점유, BFS 이동 범위)",
+        "전략 패턴 기반 적 AI·카드 효과 (적 6종, 카드 31종)",
+        "상태효과 8종, 함정·AoE, 맵 랜덤 생성, 튜토리얼, 일시정지, BGM",
+        "GameAction 34종, System 33개"
       ],
       "problemSolving": [
         {
-          "problem": "드를 쓰면 공격이 일어나고, 피해가 들어가고, 화상이 걸리고, 적이 죽고, 다음 웨이브가 나옵니다. 이런 연쇄를 시스템끼리 직접 호출하면 기능을 하나 추가할 때마다 여러 시스템을 고쳐야 하고 호출 순서도 꼬입니다. 연출(애니메이션)이 끝난 뒤에 다음 로직이 실행되어야 하는 문제도 있었습니다.",
-          "solution": "이런 한 문제점을 해결할 수 있는 Action 기반 아키텍처를 찾아서 이를 기반으로 시스템을 확장하고 설계해 나갔습니다. Action 기반 아케텍처는 모든 해야 할일을 객체 GameAction으로 정의하고 이 객체들을 ActionSystem에서 순서대로 처리해서 관리합니다.",
-          "result": "다양한 유물, 카드, 아이템 등으로 복잡하게 얼킬 수 있었던 시스템 간의 연결이 Action 기반 아키텍처로 인해서 질서와 규칙이 생겨서 개발 확장하기 편하게 되었습니다."
+          "problem": "카드를 쓰면 공격이 일어나고, 피해가 들어가고, 화상이 걸리고, 적이 죽고, 다음 웨이브가 나옵니다. 이런 연쇄를 시스템끼리 직접 호출하면 기능을 하나 추가할 때마다 여러 시스템을 고쳐야 하고 호출 순서도 꼬입니다. 연출(애니메이션)이 끝난 뒤에 다음 로직이 실행되어야 하는 문제도 있었습니다.",
+          "solution": "강의(Slay The Spire in UNITY)에서 배운 Action 기반 아키텍처를 기반으로 삼았습니다. 모든 해야 할 일을 GameAction 객체로 정의하고, ActionSystem이 PRE 반응 → Performer → POST 반응 순서로 처리합니다. 이 구조 위에 그리드, 적 AI, 상태효과, 맵 생성 등을 직접 확장했습니다.",
+          "result": "다양한 유물, 카드, 아이템 등으로 복잡하게 얽힐 수 있었던 시스템 간의 연결에 질서와 규칙이 생겨, 기반 구조를 무너뜨리지 않고 개발을 확장하기 편해졌습니다."
         }
       ],
       "links": {
         "play": "https://store.onstove.com/ko/games/104874",
         "video": "https://www.youtube.com/watch?v=x6d42LqlN9A",
         "github": "https://github.com/Taehyeon88/Graduation-project/tree/0b9dead",
-        "document": "documents/project-document.html"
+        "document": "documents/legacy-of-dungeon.html"
+      }
+    },
+    {
+      "id": "rovoid",
+      "title": "Rovoid",
+      "thumbnail": "images/Rovoid_Image.png",
+      "description": "칩셋(직업)을 장착해 무기와 스킬을 바꾸고, 유물을 모아 성장하는 2.5D 액션 로그라이크",
+      "genre": "액션 로그라이크, 2.5D",
+      "platform": "PC",
+      "period": "2025.07 ~ 2025.12",
+      "team": {
+        "size": 7,
+        "myRole": "클라이언트 프로그래밍 (코어 아키텍처, 플레이어, 유물, UI, 사운드)"
+      },
+      "contributions": [
+        "총원 7명 (클라이언트 프로그래밍 2명, 기획 1명, PM/QA 1명, 아트 3명)",
+        "게임 코어 아키텍처 및 플레이어, 직업/스킬/아이템 시스템",
+        "시스템 구조 설계: Manager 구조, 이벤트 기반 통신, 데이터 로더",
+        "무기·스킬 의존성 주입 구조 (칩셋 장착으로 교체)",
+        "이벤트 기반 유물 시스템: 효과 48종, 유물 64개, 교환기·정화기",
+        "플레이어 이동·대시·공격·애니메이션, 치명타·회피",
+        "칩셋 선택·인벤토리·설정·가이드 UI, 경험치·보상 상자, 사운드 시스템"
+      ],
+      "problemSolving": [
+        {
+          "problem": "무기와 스킬은 칩셋(전사, 궁수)마다 다릅니다. 공격을 처리하는 PlayerAttack이 구체적인 무기를 알고 있으면, 칩셋이 늘어날 때마다 공격 코드를 고쳐야 합니다.",
+          "solution": "PlayerAttack은 추상 클래스 WeaponType과 SkillType[]에만 의존하게 하고, InventoryManager가 칩셋을 장착할 때 무기와 스킬을 프로퍼티(세터)로 주입하도록 했습니다. 해제하면 null로 되돌립니다.",
+          "result": "새 무기나 칩셋을 추가해도 PlayerAttack은 수정하지 않습니다. 장착 중에 무기를 바꾸는 것도 주입만 다시 하면 됩니다."
+        }
+      ],
+      "links": {
+        "play": "https://store.onstove.com/ko/games/103329",
+        "video": "",
+        "github": "https://github.com/coil38/2025-2_Space",
+        "document": "documents/rovoid.html"
+      }
+    },
+    {
+      "id": "superup",
+      "title": "SuperUp",
+      "thumbnail": "images/SuperUp_Image.png",
+      "description": "벽타기와 점프로 정상을 향해 올라가는 3D 온리업류 플랫포머",
+      "genre": "온리업류 (3D 플랫포머)",
+      "platform": "PC",
+      "period": "2025.03 ~ 2025.06",
+      "team": {
+        "size": 5,
+        "myRole": "게임 기획(레벨, 퍼즐/기믹) + 클라이언트 프로그래밍"
+      },
+      "contributions": [
+        "전체 레벨 구상·배치, 특정 퍼즐 설계·구현",
+        "플레이어 상태머신(FSM)·애니메이터·벽타기",
+        "뾰족덫 계열 상속 구조",
+        "카메라(벽 통과 방지, 낙하 흔들림)",
+        "사운드 시스템, 설정 UI, 일시정지",
+        "스토리(나레이션·자막)·엔딩·밤/낮 시스템, JSON → ScriptableObject 변환"
+      ],
+      "problemSolving": [
+        {
+          "problem": "점프 애니메이션 오류, 회전 중 점프가 안 되는 문제 등 모션·물리·입력이 서로 부딪혀 동작이 막히고 상태 전환 조건이 충돌했습니다.",
+          "solution": "플레이어를 Move, Jumping, Falling, Landing, SupperLanding, Climbing 6개 상태의 상태 패턴(FSM)으로 나눠 상태별로 이동 제한을 분리하고, 이전 상태 → 다음 상태 조합마다 애니메이션 전환 시간(0.01초 / 0.1~0.2초)을 다르게 했습니다.",
+          "result": "파쿠르·착지 때 끊기던 모션과 상태가 꼬이던 문제를 상태 전환 규칙으로 정리했고, 함정 충돌 문제는 DOTween 이동에서 물리 기반 이동으로 바꿔 해결했습니다."
+        }
+      ],
+      "links": {
+        "play": "https://store.onstove.com/ko/games/101426",
+        "video": "",
+        "github": "https://github.com/Taehyeon88/Team7_SuperUp",
+        "document": "documents/superup.html"
+      }
+    },
+    {
+      "id": "noblenick",
+      "title": "NobleNick",
+      "thumbnail": "images/NobleNick_Image.png",
+      "description": "집주인이 있는 집에서 단서와 아이템을 모아 탈출하는 3D 공포 퍼즐 게임",
+      "genre": "퍼즐, 3D, 공포",
+      "platform": "PC",
+      "period": "2024.09 ~ 2024.12",
+      "team": {
+        "size": 6,
+        "myRole": "게임 기획(퍼즐·레벨) + 클라이언트 프로그래밍 (집주인 FSM)"
+      },
+      "contributions": [
+        "퍼즐·레벨디자인 기획 및 배치 (1~5일차 구성)",
+        "집주인 행동 패턴 FSM (탐색·의심·추격 판단·추격), 시야·소리 감지",
+        "플레이어 이동·숨기·스태미너",
+        "아이템·인벤토리 시스템과 상호작용 오브젝트(금고, 책장, 서랍, 잠긴 문 등)",
+        "일차별 이벤트·튜토리얼, 사운드 시스템, 세이브, UI"
+      ],
+      "problemSolving": [
+        {
+          "problem": "집주인의 소리 감지와 순찰 이동이 서로 부딪혀 적이 방황했고, 시야 감지와 소리 감지 사이의 전환 오류와 어그로 해제 조건이 어색했습니다.",
+          "solution": "집주인의 행동을 Research(탐색), FeelStrage(의심), JudgeChase(추격 판단), ChaseState(추격) 4개 상태의 FSM으로 나누고, Research 상태 안에서 소리가 감지되면 순찰을 일시정지, 사라지면 다시 시작하도록 정리했습니다.",
+          "result": "플레이 테스트를 반복하며 감지 레벨과 어그로 해제 조건(숨은 경우가 아니라 시야 밖에 있을 때 해제)을 조정해, 시야·소리 감지에 따라 탐색·의심·추격을 오가는 행동 패턴을 완성했습니다."
+        }
+      ],
+      "links": {
+        "play": "https://store.onstove.com/ko/games/4622",
+        "video": "",
+        "github": "https://github.com/wooyoonsung7/24-1B_TeamLondon",
+        "document": "documents/noblenick.html"
       }
     }
   ]
