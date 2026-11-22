@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="졸업작품 개발에서 실제로 운영 중인 AI(Claude Code) 워크플로우: 컨텍스트 설계, 슬래시 커맨드, MCP, 가드레일">
+  <title>AI 개발 워크플로우 · 문태현</title>
+  <link rel="stylesheet" href="css/portfolio.css">
+  <link rel="stylesheet" href="css/ai-workflow.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html">← 포트폴리오</a>
+    <nav aria-label="페이지 메뉴">
+      <a href="#structure">구조</a>
+      <a href="#case">사례</a>
+      <a href="#guardrails">가드레일</a>
+      <a href="#limits">한계</a>
+    </nav>
+  </header>
+
+  <main class="ai-shell">
+    <p class="eyebrow">AI WORKFLOW</p>
+    <h1>AI를 "쓰는" 것이 아니라<br>AI가 일할 "구조"를 설계합니다.</h1>
+    <p class="ai-lead">
+      현재 개발 중인 졸업작품(Unity, 턴/그리드 전략)에서 Claude Code를 실제로 운영하는 방식입니다.
+      모든 내용은 졸업작품 저장소의 파일과 커밋 이력에 근거하며, 확인되지 않은 효과 수치는 쓰지 않았습니다.
+    </p>
+    <p class="ai-note">
+      <b>대상 프로젝트:</b> 체스에서 영감을 받은 덱빌딩 전략 게임. 전투 규칙은 원작(Master of Piece)을 분석해 그대로 따르고,
+      진행 구조(스테이지 클리어형)와 성장은 자체 설계합니다. 아트는 범위에서 제외했습니다.
+      수상작 Legacy of Dungeon과는 별개의, 2026.09 이후 새로 시작한 프로토타입입니다.
+    </p>
+
+    <div class="ai-facts" aria-label="구조 요약">
+      <div class="ai-fact"><strong>7</strong><span>커스텀 슬래시 커맨드<br>(반복 작업을 추출)</span></div>
+      <div class="ai-fact"><strong>6</strong><span>howto 레시피 문서<br>(약 890줄)</span></div>
+      <div class="ai-fact"><strong>11절</strong><span>코드 규약·인프라 계약<br>(convention.md 296줄)</span></div>
+      <div class="ai-fact"><strong>6건</strong><span>코드 착수 전 정리한<br>기획↔코드 충돌</span></div>
+    </div>
+
+    <section class="ai-section" id="structure">
+      <h2>1. 전체 구조</h2>
+      <p>
+        "프롬프트를 잘 쓴다"가 아니라, 세션이 새로 시작돼도 같은 품질로 일하도록 <b>컨텍스트를 파일로 고정</b>하는 방식입니다.
+        기획은 Claude Docs, 코드 규칙은 repo 문서, 반복 절차는 커맨드로 역할을 나눴습니다.
+      </p>
+
+      <div class="ai-diagram">
+        <svg viewBox="0 0 900 330" role="img" aria-label="CLAUDE.md에서 Docs, howto, 슬래시 커맨드, MCP 도구, 검증으로 이어지는 흐름도">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6757df"/></marker>
+            <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#667085"/></marker>
+          </defs>
+
+          <rect class="d-box alt" x="20" y="20" width="250" height="58" rx="12"/>
+          <text class="d-title" x="36" y="45">기획 원본 (Claude Docs)</text>
+          <text class="d-sub" x="36" y="64">스테이지형 전환 기획서 · 진행/성장 결정</text>
+
+          <rect class="d-box" x="20" y="130" width="170" height="70" rx="12"/>
+          <text class="d-title" x="36" y="156">CLAUDE.md</text>
+          <text class="d-sub" x="36" y="175">페르소나 · 문서 라우팅</text>
+          <text class="d-sub" x="36" y="190">작업 분담 · 검증 기준</text>
+
+          <rect class="d-box" x="250" y="110" width="190" height="110" rx="12"/>
+          <text class="d-title" x="266" y="136">Docs/</text>
+          <text class="d-sub" x="266" y="156">game-design (무엇을)</text>
+          <text class="d-sub" x="266" y="172">feature-spec 17챕터 (목차 라우팅)</text>
+          <text class="d-sub" x="266" y="188">convention (규약·인프라 계약)</text>
+          <text class="d-sub" x="266" y="204">catalog (현재 상태 레지스트리)</text>
+
+          <rect class="d-box" x="500" y="110" width="170" height="110" rx="12"/>
+          <text class="d-title" x="516" y="136">Docs/howto/</text>
+          <text class="d-sub" x="516" y="156">레시피 6종</text>
+          <text class="d-sub" x="516" y="172">조건→효과→에셋→문서→검증</text>
+          <text class="d-sub" x="516" y="188">첫 사례를 손으로 만든 뒤</text>
+          <text class="d-sub" x="516" y="204">절차로 문서화</text>
+
+          <rect class="d-box" x="730" y="110" width="150" height="110" rx="12"/>
+          <text class="d-title" x="746" y="136">/커맨드 7종</text>
+          <text class="d-sub" x="746" y="156">입력 검증 · 질문 조건</text>
+          <text class="d-sub" x="746" y="172">허용 도구 제한</text>
+          <text class="d-sub" x="746" y="188">"문서가 기준" 위임</text>
+
+          <rect class="d-box alt" x="500" y="258" width="180" height="58" rx="12"/>
+          <text class="d-title" x="516" y="283">Serena MCP</text>
+          <text class="d-sub" x="516" y="301">심볼 단위 코드 탐색·수정</text>
+
+          <rect class="d-box alt" x="700" y="258" width="180" height="58" rx="12"/>
+          <text class="d-title" x="716" y="283">Unity MCP</text>
+          <text class="d-sub" x="716" y="301">콘솔 · SO 에셋 · 씬</text>
+
+          <rect class="d-box alt" x="250" y="258" width="200" height="58" rx="12"/>
+          <text class="d-title" x="266" y="283">검증</text>
+          <text class="d-sub" x="266" y="301">콘솔 에러 0 · /convention 점검</text>
+
+          <path class="d-arrow" d="M145 78 L105 128"/>
+          <path class="d-arrow" d="M190 165 L248 165"/>
+          <path class="d-arrow" d="M440 165 L498 165"/>
+          <path class="d-arrow" d="M670 165 L728 165"/>
+          <path class="d-arrow" d="M805 220 L795 256"/>
+          <path class="d-arrow" d="M760 220 L620 256"/>
+          <path class="d-loop" d="M700 287 L452 287"/>
+          <path class="d-loop" d="M350 258 L350 224"/>
+          <text class="d-label" x="360" y="244">어긋나면 어느 쪽이 낡았는지 먼저 보고</text>
+        </svg>
+      </div>
+
+      <table class="ai-table">
+        <tr><th style="width:22%">계층</th><th>역할</th><th style="width:30%">근거 파일</th></tr>
+        <tr><td><b>세션 진입점</b></td><td>"언제 무엇을 읽을지" 라우팅. 새 기능은 해당 챕터 명세 1개만 열고 시작합니다.</td><td><code>CLAUDE.md</code></td></tr>
+        <tr><td><b>명세·규약</b></td><td>무엇을 만드는가(game-design), 챕터별 명세(feature-spec), 코드 규칙과 시그니처 계약(convention).</td><td><code>Docs/*.md</code>, <code>Docs/feature-spec/</code></td></tr>
+        <tr><td><b>레시피</b></td><td>유물·특성·소문 등 "하나를 만드는 절차"를 단계별로 고정. 실제 사례 코드를 예시로 포함합니다.</td><td><code>Docs/howto/*.md</code></td></tr>
+        <tr><td><b>커맨드</b></td><td>레시피를 실행하는 진입점. 절차는 복제하지 않고 문서를 가리킵니다.</td><td><code>.claude/commands/*.md</code></td></tr>
+        <tr><td><b>도구</b></td><td>코드는 Serena(심볼 단위), 에디터는 Unity MCP(콘솔·에셋·씬).</td><td><code>.mcp.json</code>, MCPForUnity 패키지</td></tr>
+      </table>
+
+      <h3>이렇게 발전시켰습니다</h3>
+      <ul class="ai-timeline">
+        <li><time>2026-06-03 ~ 06-04</time>Claude Code 환경 구축(Unity MCP, Serena MCP, VS Code)과 CLAUDE.md 최초 작성.</li>
+        <li><time>2026-09-27</time>CLAUDE.md와 convention.md(코드 제약) 본격 적용, 적 구현 프로세스를 커맨드로 정리 시작.</li>
+        <li><time>2026-10-15 ~ 10-26</time>특성 → 유물 → 지형 → 소문 순으로 반복 작업을 커맨드 + howto로 추출.</li>
+        <li><time>2026-11-13 ~ 11-16</time>기획 변경(스테이지형 전환)을 반영: 기획 원본을 Claude Docs로 단일화하고, 충돌표와 T-xx 작업 목록으로 구현 순서를 고정.</li>
+      </ul>
+    </section>
+
+    <section class="ai-section" id="case">
+      <h2>2. 사례: <code>/perk 검푸른 망토</code> 한 건이 처리되는 과정</h2>
+      <p>
+        유물 하나를 추가하는 일을 예로 듭니다. 입력은 한 줄이고, 그 뒤의 절차는 커맨드가 문서를 읽어 따릅니다.
+        첫 사례였던 "검푸른 망토"(아군 깃발에 대한 적 용병의 공격이 빗나감, 전투당 1번)는 howto 문서에 "검증된 절차"로 남아 있습니다.
+      </p>
+
+      <div class="ai-quote">/perk 검푸른 망토, 아군 깃발에 대한 적 용병의 공격이 빗나갑니다. 전투당 1번 발동됩니다.</div>
+
+      <ol class="ai-steps">
+        <li><b>입력 검증.</b> "언제(조건)"와 "무엇을(효과)"을 구분할 수 없으면 코드를 쓰지 않고 먼저 질문합니다.</li>
+        <li><b>읽기 순서 고정.</b> 유물 카탈로그 → howto 전체 → 재사용 후보 클래스는 <i>파일을 직접 읽기</i> → 규약과 관련 GameAction의 Performer. 카탈로그와 실제 파일이 어긋나면 어느 쪽이 낡았는지 먼저 알립니다.</li>
+        <li><b>분해와 재사용 판단.</b> 설명을 조건/효과로 나누고 각각 <b>재사용 / 수치만 다름 / 신규</b>로 분류합니다. 없을 때만 새로 만듭니다.</li>
+        <li><b>멈춤 조건.</b> 모호한 범위·타이밍·수치, 부분 겹침, 새 GameAction 필요, 기존 계약(시그니처·Performer) 수정 필요 중 하나라도 걸리면 선택지를 제시하고 승인을 받습니다.</li>
+        <li><b>생성.</b> 클래스를 작성하고, 에셋은 Unity MCP로 ScriptableObject를 만듭니다.</li>
+        <li><b>문서 갱신과 검증.</b> 카탈로그를 갱신하고 콘솔을 읽어 에러 0을 확인합니다.</li>
+      </ol>
+
+      <div class="ai-quote">절차 자체는 이 파일에 복제하지 않는다 — 문서가 기준이다. 아래는 이 커맨드 고유 규칙만 적는다.
+비어 있거나 "언제(조건)"와 "무엇을(효과)"을 구분할 수 없으면 코드를 쓰지 않고 AskUserQuestion으로 먼저 묻는다. 추측하지 않는다.<small>— .claude/commands/perk.md 발췌</small></div>
+
+      <h3>왜 이렇게 설계했나</h3>
+      <ul class="ai-list">
+        <li><b>절차를 한 곳에만 둡니다.</b> 커맨드는 문서를 가리키기만 하므로, 규칙이 바뀌면 문서 하나만 고치면 됩니다.</li>
+        <li><b>재사용을 기본값으로 합니다.</b> 비슷한 유물이 쌓일수록 AI가 중복 클래스를 만들기 쉬워서, 카탈로그 대조를 첫 단계에 고정했습니다.</li>
+        <li><b>허용 도구를 제한합니다.</b> 커맨드마다 쓸 수 있는 도구를 명시하고, 점검용 <code>/convention</code>은 모델이 자동 호출하지 못하게 했습니다.</li>
+      </ul>
+    </section>
+
+    <section class="ai-section" id="guardrails">
+      <h2>3. 가드레일과, 실패에서 만든 규칙</h2>
+      <p>AI가 틀릴 수 있다는 전제로 규칙을 CLAUDE.md에 명문화했습니다. 아래는 그중 실제 운영 중인 것들입니다.</p>
+
+      <table class="ai-table">
+        <tr><th style="width:34%">규칙</th><th>의도</th></tr>
+        <tr><td>코드를 짜기 전에 <b>의도를 한 줄</b>로 먼저 말한다</td><td>잘못된 방향이면 코드가 나오기 전에 끊을 수 있게 합니다.</td></tr>
+        <tr><td>명세와 충돌하면 <b>차이를 먼저</b> 알리고 진행한다</td><td>조용한 변경을 막습니다.</td></tr>
+        <tr><td>문서와 코드가 어긋나면 <b>어느 쪽이 낡았는지</b> 짚는다. 조용히 맞추지 않는다</td><td>문서가 현재 코드를 역추출한 스냅샷이라, 낡았을 수도 "알려진 위반"일 수도 있기 때문입니다.</td></tr>
+        <tr><td>모르는 것은 추측하지 않고 <code>(원작 확인 필요)</code>로 표기한다</td><td>원작 규칙을 그럴듯하게 지어내는 것을 막습니다.</td></tr>
+        <tr><td>핵심 인프라(<code>ActionSystem</code>, <code>Singleton&lt;T&gt;</code>)는 수정하지 않고 상속·사용만 한다</td><td>전체 시스템이 얹힌 기반이 조용히 깨지는 것을 막습니다.</td></tr>
+        <tr><td>에디터 작업은 <b>클릭 순서를 안내하고 멈춘다</b></td><td>AI가 한 척하지 않게 하고, 작업 분담을 분명히 합니다.</td></tr>
+      </table>
+
+      <div class="ai-cases">
+        <div class="ai-case">
+          <h3>① 허락 없이 구현한 사건</h3>
+          특성 작업에서 계획을 승인받은 직후 AI가 여러 파일을 바로 수정했고, 제가 중단시켰습니다.
+          이후 "승인된 계획이 있어도 구현 단계마다 어떤 파일을 바꿀지 알리고 허락을 받는다"를 규칙으로 기록했습니다.
+          <br><small>2026-10-19 · 작업 메모리에 기록</small>
+        </div>
+        <div class="ai-case">
+          <h3>② 구현 전에 폐기한 작업</h3>
+          재도전을 위한 시드 고정 시스템(T-01)을 계획했지만, 기획서를 다시 확인해 적 행동에 랜덤이 없다는 점을 확인하고 구현 전에 폐기했습니다.
+          폐기 사유를 task-list에 남겼습니다.
+          <br><small>2026-11-16 · Docs/task-list.md</small>
+        </div>
+        <div class="ai-case">
+          <h3>③ 기획 원본의 단일화</h3>
+          기획을 repo로 동기화하는 커맨드(<code>/design_sync</code>)를 만들었다가, 원본을 Claude Docs 하나로 두고 repo 문서는 사본으로 정리하며 삭제했습니다.
+          <br><small>2026-11-16 · 커밋·task-list 기록</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="ai-section" id="spec">
+      <h2>4. 코드 전에 충돌부터 정리하는 진행 방식</h2>
+      <p>
+        기획이 "로그라이크 → 스테이지 클리어형"으로 바뀌었을 때, 곧바로 코딩하지 않고
+        <a href="https://github.com/Taehyeon88/Graduation-project" target="_blank" rel="noopener noreferrer">task-list</a>의 첫 항목(T-00)에서
+        기획서와 현재 코드가 어긋나는 6곳을 표로 만들었습니다. 이후 작업은 "T-xx 진행해" 한 줄로 명령하고, 각 항목은 해당 챕터 명세 1개와 convention만 읽고 시작합니다.
+      </p>
+      <table class="ai-table">
+        <tr><th style="width:8%">#</th><th>기획서</th><th>현재 코드</th></tr>
+        <tr><td>C1</td><td>로그라이크 없음, 실패 시 같은 스테이지 재도전</td><td>런 단위 진행·"처음부터" 시작 로직</td></tr>
+        <tr><td>C4</td><td>덱 = 스테이지 기본 영웅 + 선택 영웅 (5~8장)</td><td>런 동안 누적되는 덱</td></tr>
+        <tr><td>C6</td><td>클리어 보상 = 휘장·별·해금</td><td>용병 후보 제시, 소문 획득, 엘리트 스테이지</td></tr>
+      </table>
+      <p class="ai-note" style="margin-top:0">표는 6건 중 3건만 발췌했습니다. 결정이 필요한 항목은 각 문서에 <code>(결정 필요)</code>로 남겨 두고 임의로 정하지 않았습니다.</p>
+    </section>
+
+    <section class="ai-section" id="limits">
+      <h2>5. 한계와 아직 못 한 것</h2>
+      <ul class="ai-list">
+        <li><b>효과를 수치로 측정하지 못했습니다.</b> 시간 단축률이나 버그 감소율 같은 비교 자료는 없습니다. 위의 숫자는 모두 구조의 크기이지 성과가 아닙니다.</li>
+        <li><b>문서 유지 비용이 있습니다.</b> convention.md는 현재 코드를 조사해 만든 스냅샷이라, 규약에서 벗어난 기존 코드가 11절에 "알려진 위반"으로 남아 있습니다. 문서와 코드의 정합은 아직 사람이 점검합니다.</li>
+        <li><b>커맨드가 만든 것과 손으로 만든 것을 구분해 집계하지 않았습니다.</b> 그래서 에셋 개수 같은 수치를 AI 성과로 내세우지 않았습니다.</li>
+        <li><b>환경 의존이 있습니다.</b> 일부 규칙(Serena 호출, 단계별 허락 등)은 개인 작업 메모리에 있고 repo에는 없습니다.</li>
+      </ul>
+    </section>
+
+    <section class="ai-section" id="evidence">
+      <h2>증거 위치</h2>
+      <p class="ai-evidence">
+        졸업작품 저장소(<a href="https://github.com/Taehyeon88/Graduation-project" target="_blank" rel="noopener noreferrer">GitHub</a>)의
+        <code>GameProject/CLAUDE.md</code>, <code>.claude/commands/</code>, <code>Docs/convention.md</code>, <code>Docs/howto/</code>, <code>Docs/task-list.md</code>.
+        환경 구축 커밋 <code>63fe0749</code>, 규약 적용 커밋 <code>93e4db34</code>, 유물 커맨드 첫 사례 커밋 <code>e1572b72</code>.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>문태현 · Taehyeon5376@gmail.com</p>
+  </footer>
+</body>
+</html>
