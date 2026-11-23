@@ -1,3 +1,6 @@
+# 포트폴리오 링크
+https://taehyeon88.github.io/Portfolio/index.html
+
 # 게임 포트폴리오 템플릿
 
 게임콘텐츠과 학생이 프로젝트 정보, 출시 링크, GitHub, 이력서와 프로젝트 문서를 하나의 주소로 보여주기 위한 정적 웹 템플릿입니다.
