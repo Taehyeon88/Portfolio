@@ -8,6 +8,11 @@
 .ai-section > p { color: var(--muted); line-height: 1.75; }
 .ai-section h3 { margin: 28px 0 8px; font-size: 1.1rem; }
 
+.ai-video { position: relative; aspect-ratio: 16 / 9; margin-top: 18px; border-radius: 16px; overflow: hidden; background: #171a21; border: 1px solid var(--line); box-shadow: var(--shadow); }
+.ai-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.ai-video-link { margin: 10px 0 0; font-size: .9rem; }
+.ai-video-link a { color: var(--accent); font-weight: 700; text-decoration: none; }
+
 .ai-facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 28px; }
 .ai-fact { padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
 .ai-fact strong { display: block; font-size: 1.7rem; letter-spacing: -.04em; color: var(--accent); }

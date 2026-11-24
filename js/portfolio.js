@@ -47,9 +47,9 @@ function renderPortfolio(data) {
   }).join("");
 
   const documents = [];
-  if (safeLink(profile.resume)) documents.push({ label: "이력서", href: profile.resume, meta: "PDF 또는 문서" });
+  if (safeLink(profile.resume)) documents.push({ label: "이력서", href: profile.resume, meta: "이력서" });
   projects.forEach(project => {
-    if (safeLink(project.links?.document)) documents.push({ label: `${project.title} 프로젝트 문서`, href: project.links.document, meta: "프로젝트 자료" });
+    if (safeLink(project.links?.document)) documents.push({ label: `${project.title} 상세 정리`, href: project.links.document, meta: "담당 · 기술 · 문제 해결" });
   });
   const documentLinks = documents.map(document => `<a class="document-link" href="${escapeHtml(safeLink(document.href))}" target="_blank" rel="noopener noreferrer">${escapeHtml(document.label)}<span>${escapeHtml(document.meta)} →</span></a>`).join("");
 
@@ -76,7 +76,7 @@ function renderPortfolio(data) {
       <div class="section-heading"><h2>출시 및 프로젝트</h2><p>게임을 선택하면 담당 기능과 문제 해결 과정을 확인할 수 있습니다.</p></div>
       <div class="project-grid">${projectCards || "<p>등록된 프로젝트가 없습니다.</p>"}</div>
     </section>
-    ${documentLinks ? `<section class="section" id="documents"><div class="documents"><div><p class="eyebrow">DOCUMENTS</p><h2>작업 증거를 함께 보여줍니다.</h2><p>이력서와 프로젝트 설명을 실제 기획서, 구조도, 테스트 문서로 연결합니다.</p></div><div class="document-list">${documentLinks}</div></div></section>` : ""}`;
+    ${documentLinks ? `<section class="section" id="documents"><div class="documents"><div><p class="eyebrow">PROJECT NOTES</p><h2>맡은 일과 기술, 문제 해결을 정리했습니다.</h2><p>이력서와, 프로젝트별로 직접 구현한 시스템·사용 기술·문제 해결 과정을 정리한 문서로 연결합니다.</p></div><div class="document-list">${documentLinks}</div></div></section>` : ""}`;
 }
 
 fetch("data/portfolio.json", { cache: "no-store" })
